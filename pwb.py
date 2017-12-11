@@ -4,6 +4,7 @@ import threading
 from flask import Flask
 from flask import request
 from webworker import WebWorker
+from plot import Plot
 
 def createThreadObject():
 	# create thread objects for the current benchmark
@@ -88,6 +89,19 @@ time.sleep(0.1)
 
 # Close threads, stop program
 stopThreads()
+
+result=[]
+
+# print(settings.resultDict)
+
+for key in settings.concurrency:
+	# print(key)
+	# print(settings.resultDict[str(key)])
+
+	result.append(settings.resultDict[str(key)])
+
+# process data
+Plot.boxplot(result)
 
 # exit script
 sys.exit(0)

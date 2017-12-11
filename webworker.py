@@ -1,5 +1,5 @@
 import settings
-import time, subprocess, psutil, json, threading
+import time, subprocess, json, threading
 from benchmark import Benchmark
 
 class WebWorker(threading.Thread):
@@ -19,7 +19,9 @@ class WebWorker(threading.Thread):
 				with settings.current_num_lock:
 					# check (with the lock) if current_num_requests is not 0 in the mean time
 					# to make sure no mistakes are made
-					if settings.current_num_requests > 0: 
+					# print("worker "+str(i)+": "+str(settings.current_num_requests))
+					if settings.current_num_requests > 0:
+						currentI = settings.currentConcurrency
 						settings.current_num_requests-=1
 						conq = settings.current_num_requests
 					else:
@@ -34,8 +36,10 @@ class WebWorker(threading.Thread):
 				##
 				####################
 				result = Benchmark.ergosleep()
+				# result = result[0]
 				####################
-				settings.resultDict[str(settings.currentConcurrency)].append(result)
+				settings.resultDict[str(currentI)].append(result[0])
+				time.sleep(0.5)
 			else:
 				time.sleep(1)
 
