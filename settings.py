@@ -9,7 +9,7 @@ def init():
 
     global current_num_requests, num_requests
     current_num_requests = 0
-    num_requests = 20
+    num_requests = 10
 
     global request_times_concurrency
     request_times_concurrency = True
@@ -19,7 +19,7 @@ def init():
     sendstop = False
 
     global concurrency, currentConcurrency
-    concurrency = [1,5,10,15,20,25,30]
+    concurrency = [1,5]
     # concurrency = [25,30]
     currentConcurrency = 0
 
@@ -27,6 +27,15 @@ def init():
     current_num_lock = threading.Lock()
     maxrp = 1
 
+    global plotID
+    plotID = 1
+
+    global testName
+    testName = "test1"
+
+    global contentDir
+    contentDir="./content"
+  
 
     global resultBuildUp
     resultBuildUp = {"2":"request 1","1":"request 2","0":"both requests"}

@@ -4,7 +4,6 @@ import threading
 from flask import Flask
 from flask import request
 from webworker import WebWorker
-from plot import Plot
 
 def createThreadObject():
 	# create thread objects for the current benchmark
@@ -69,12 +68,47 @@ def runBenchmarks():
 		print("benchmark is finished, in total there are "+str(len(settings.resultDict[str(settings.currentConcurrency)]))+" result collected ")
 
 
+def createDIRS():
+	
+	if not os.path.isdir(str(settings.contentDir)):
+		os.makedirs(str(settings.contentDir))
+	
+	# Make sure dir exists
+	if os.path.isdir(str(settings.contentDir)):
+		pass
+	else:
+		print(str(settings.contentDir)+" was not created successfully")
+		sys.exit(str(settings.contentDir)+" was not created successfully")
+
+
+	# IF:	test is already been done, exit
+	# ELSE:	creat dir
+	if os.path.isdir(str(settings.contentDir)+"/"+str(settings.testName)):
+		# print(str(settings.contentDir)+"/"+str(settings.contentDir)+" test ID already exists")
+		sys.exit(str(settings.contentDir)+"/"+str(settings.contentDir)+" test ID already exists")
+	else:	
+		os.path.isdir(str(settings.contentDir)+"/"+str(settings.testName))
+		os.makedirs(str(settings.contentDir)+"/"+str(settings.testName))
+
+	# Make sure dir exists
+	if os.path.isdir(str(settings.contentDir)+"/"+str(settings.testName)):
+		pass
+	else:
+		print(str(settings.contentDir)+"/"+str(settings.testName)+" was not created successfully")
+		sys.exit(str(settings.contentDir)+"/"+str(settings.testName)+" was not created successfully")
+
+
+
+
 
 # dict to put all thread objects in
 threadDict = {}
 
 # load shared variables
 settings.init()
+
+# create dirs stop if
+createDIRS()
 
 # run the benchmarks
 runBenchmarks()
@@ -90,18 +124,22 @@ time.sleep(0.1)
 # Close threads, stop program
 stopThreads()
 
+
+
 result=[]
 
 # print(settings.resultDict)
 
+
+from plot import Plot
 for key in settings.concurrency:
 	# print(key)
 	# print(settings.resultDict[str(key)])
-
+	Plot.lineGraph(settings.resultDict[str(key)],str(settings.testName)+"-lineGraph-"+str(key))
 	result.append(settings.resultDict[str(key)])
 
 # process data
-Plot.boxplot(result)
+Plot.boxplot(result,str(settings.testName)+"-boxplot-"+str(key))
 
 # exit script
 sys.exit(0)
