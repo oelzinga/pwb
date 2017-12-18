@@ -35,10 +35,10 @@ class WebWorker(threading.Thread):
 				## INSERT code here
 				##
 				####################
-				result = Benchmark.ergosleep()
+				result = Benchmark.example()
 				# result = result[0]
 				####################
-				settings.resultDict[str(currentI)].append(result[0])
+				settings.resultDict[str(currentI)]["raw"].append(result[0])
 				time.sleep(0.5)
 			else:
 				time.sleep(1)

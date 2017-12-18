@@ -1,9 +1,13 @@
 import sys, os, json, time
 import settings
 import threading
+import numpy
 from flask import Flask
 from flask import request
 from webworker import WebWorker
+from excel import excel
+from latexOutput import latexOutput
+
 
 def createThreadObject():
 	# create thread objects for the current benchmark
@@ -43,7 +47,10 @@ def runBenchmarks():
 	for conq in settings.concurrency:
 		
 		settings.currentConcurrency = conq
-		settings.resultDict[str(settings.currentConcurrency)] = []
+		# create dict for current test
+		settings.resultDict[str(settings.currentConcurrency)] = {}
+		# create array for raw data
+		settings.resultDict[str(settings.currentConcurrency)]["raw"] = []
 
 		# 1: create thread objects
 		createThreadObject()
@@ -65,7 +72,7 @@ def runBenchmarks():
 			print("conq is running")
 
 
-		print("benchmark is finished, in total there are "+str(len(settings.resultDict[str(settings.currentConcurrency)]))+" result collected ")
+		print("benchmark is finished, in total there are "+str(len(settings.resultDict[str(settings.currentConcurrency)]["raw"]))+" result collected ")
 
 
 def createDIRS():
@@ -97,6 +104,13 @@ def createDIRS():
 		print(str(settings.contentDir)+"/"+str(settings.testName)+" was not created successfully")
 		sys.exit(str(settings.contentDir)+"/"+str(settings.testName)+" was not created successfully")
 
+def calcStatistics():
+	for key in settings.concurrency:
+	    settings.resultDict[str(key)]["avg"] = numpy.mean(settings.resultDict[str(key)]["raw"])
+	    settings.resultDict[str(key)]["std"] = numpy.std(settings.resultDict[str(key)]["raw"])
+	    settings.resultDict[str(key)]["median"] = numpy.median(settings.resultDict[str(key)]["raw"])
+	    settings.resultDict[str(key)]["min"] = min(settings.resultDict[str(key)]["raw"])
+	    settings.resultDict[str(key)]["max"] = max(settings.resultDict[str(key)]["raw"])
 
 
 
@@ -130,16 +144,25 @@ result=[]
 
 # print(settings.resultDict)
 
+calcStatistics()
+print("calc is done")
+excel.printXLSX()
+print("excel is done")
+
 
 from plot import Plot
 for key in settings.concurrency:
 	# print(key)
 	# print(settings.resultDict[str(key)])
-	Plot.lineGraph(settings.resultDict[str(key)],str(settings.testName)+"-lineGraph-"+str(key))
-	result.append(settings.resultDict[str(key)])
+	Plot.lineGraph(settings.resultDict[str(key)]["raw"],str(settings.testName)+"-lineGraph-"+str(key))
+	result.append(settings.resultDict[str(key)]["raw"])
 
 # process data
-Plot.boxplot(result,str(settings.testName)+"-boxplot-"+str(key))
+Plot.boxplot(result,str(settings.testName)+"-boxplot")
+
+latexOutput.save()
+
+print(settings.resultDict)
 
 # exit script
 sys.exit(0)
