@@ -2,4 +2,4 @@
 class Benchmark():
 	def example():
 		# print("somezing")
-		return 2
+		return [7,8,9]

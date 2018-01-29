@@ -19,7 +19,7 @@ def init():
     sendstop = False
 
     global concurrency, currentConcurrency
-    concurrency = [1,5]
+    concurrency = [1]
     # concurrency = [25,30]
     currentConcurrency = 0
 

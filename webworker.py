@@ -35,11 +35,19 @@ class WebWorker(threading.Thread):
 				## INSERT code here
 				##
 				####################
-				result = Benchmark.example()
+				results = Benchmark.example()
 				# result = result[0]
 				####################
-				settings.resultDict[str(currentI)]["raw"].append(result[0])
+				i = 0
+				for result in results:
+					try:
+						result=float(result)
+						settings.resultDict[str(currentI)][str(i)]["raw"].append(result)
+					except:
+						print("pass")
+					i+=1
+
+
 				time.sleep(0.5)
 			else:
 				time.sleep(1)
-
